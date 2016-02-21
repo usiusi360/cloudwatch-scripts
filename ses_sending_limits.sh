@@ -11,8 +11,7 @@ usage=`aws --region us-east-1 ses get-send-quota`
 SentLast24Hours=`echo ${usage}|jq .SentLast24Hours`
 MaxSendRate=`echo ${usage}|jq .MaxSendRate`
 
-log SentLast24hours:${SentLast24Hours}
-log MaxSendRate:${MaxSendRate}
+log "cloudwatch put-metrics-data SES SentLast24hours:${SentLast24Hours} MaxSendRate:${MaxSendRate}"
 
 ses_put_metrics=("--metric-name SentLast24Hours --unit Count --value ${SentLast24Hours}"
                  "--metric-name MaxSendRate --unit Count --value ${MaxSendRate}")
@@ -33,14 +32,13 @@ for options in ${ses_put_metrics[@]}; do
     eval "aws cloudwatch put-metric-data --namespace SES --region ${region} ${options}"
     if [ $? -ne 0 ]; then
       if [ "${j}" -ge "${MAX_RETRY}" ]; then
-        log "failed to put metrics."
+        log "cloudwatch put-metrics-data SES failed to put metrics."
         IFS=$IFS_bak
         exit 1
       fi
     else
       break
     fi
-    #j=$((j + 1))
     let j++
     sleep ${RETRY_INTERVAL}
   done
