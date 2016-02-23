@@ -8,6 +8,8 @@ region=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-
  
 usage=`aws --region us-east-1 ses get-send-statistics|jq '.SendDataPoints' | jq 'sort_by(.Timestamp)|.[length-1]'`
 
+Timestamp=`echo ${usage}|jq '.Timestamp'`
+echo ${Timestamp}
 Bounces=`echo ${usage}|jq '.Bounces'`
 Complaints=`echo ${usage}|jq '.Complaints'`
 
@@ -29,7 +31,7 @@ for options in ${ses_put_metrics[@]}; do
   RETRY_INTERVAL=1
  
   while :; do
-    eval "aws cloudwatch put-metric-data --namespace SES --region ${region} ${options}"
+    eval "aws cloudwatch put-metric-data --namespace SES --region ${region} --timestamp ${Timestamp} ${options}"
     if [ $? -ne 0 ]; then
       if [ "${j}" -ge "${MAX_RETRY}" ]; then
         log "cloudwatch put-metrics-data SES failed to put metrics."
