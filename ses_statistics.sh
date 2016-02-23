@@ -9,7 +9,6 @@ region=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-
 usage=`aws --region us-east-1 ses get-send-statistics|jq '.SendDataPoints' | jq 'sort_by(.Timestamp)|.[length-1]'`
 
 Timestamp=`echo ${usage}|jq '.Timestamp'`
-echo ${Timestamp}
 Bounces=`echo ${usage}|jq '.Bounces'`
 Complaints=`echo ${usage}|jq '.Complaints'`
 
