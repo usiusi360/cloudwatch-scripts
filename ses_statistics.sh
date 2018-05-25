@@ -30,7 +30,8 @@ for options in ${ses_put_metrics[@]}; do
   RETRY_INTERVAL=1
  
   while :; do
-    eval "aws cloudwatch put-metric-data --namespace SES --region ${region} --timestamp ${Timestamp} ${options}"
+    #eval "aws cloudwatch put-metric-data --namespace SES --region ${region} --timestamp ${Timestamp} ${options}"
+    eval "aws cloudwatch put-metric-data --namespace SES --region ${region} ${options}"
     if [ $? -ne 0 ]; then
       if [ "${j}" -ge "${MAX_RETRY}" ]; then
         log "cloudwatch put-metrics-data SES failed to put metrics."
